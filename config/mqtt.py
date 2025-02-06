@@ -1,24 +1,22 @@
-import paho.mqtt.client as mqtt
+import aiomqtt
 from config import Config
 import asyncio
 
-mqtt_client = mqtt.Client()
+class MQTTClient:
+    def __init__(self):
+        self.broker = Config.MQTT_BROKER
+        self.port = Config.MQTT_PORT
+        self.topic = Config.MQTT_TOPIC
 
-MQTT_BROKER = Config.MQTT_BROKER
-MQTT_PORT = Config.MQTT_PORT
-MQTT_TOPIC = Config.MQTT_TOPIC
+    async def listen(self):
+        async with aiomqtt.Client(hostname=self.broker, port=self.port) as client:
+            await client.subscribe(self.topic)
+            async for message in client.messages:
+                payload = message.payload.decode()
+                print(f"Received: {payload}")
+                await self.handle_message(payload)
 
-class MQTT:
-    async def begin(self):
-        def on_connect(client, userdata, flags, rc):
-            client.subscribe(MQTT_TOPIC)
+    async def handle_message(self, payload):
+        print(f"Handling message: {payload}")
 
-        def on_message(client, userdata, msg):
-            payload = msg.payload.decode("utf-8")
-            asyncio.create_task(save_message(msg.topic, payload))
-            asyncio.create_task(broadcast_message(payload))
-
-        mqtt_client.on_connect = on_connect
-        mqtt_client.on_message = on_message
-        mqtt_client.connect(MQTT_BROKER, MQTT_BROKER, 60)
-        mqtt_start = mqtt_client.loop_start()
+mqtt_client = MQTTClient()

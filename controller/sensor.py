@@ -4,7 +4,7 @@ from service.led import LED
 from model.sensor import ResultSensor
 from model.led import ResultLED
 from typing import List
-
+    
 router = APIRouter()
 
 @router.get("/sensor", response_model=List[ResultSensor])
