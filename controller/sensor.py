@@ -12,9 +12,4 @@ async def get_sensor():
     data = await Sensor.get_sensor()
     return data
 
-@router.get("/led", response_model=List[ResultLED])
-async def get_led():
-    data = await LED.get_led()
-    return data
-
 router_sensor = router
