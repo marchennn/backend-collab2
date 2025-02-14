@@ -10,13 +10,12 @@ datasource database{
 
 model sensor{
     id Int @id @default(autoincrement())
-    temperature Float
-    humidity Float
-    distance1 Float
-    distance2 Float
+    temperature String
+    humidity String
+    distance1 String
+    distance2 String
     timestamp DateTime @default(now())
     update_at DateTime @default(now()) @updatedAt
-
     @@map("sensor")
 }
 
@@ -24,6 +23,9 @@ model led{
     id Int @id @default(autoincrement())
     led1 String
     led2 String
+    led3 String
+    led4 String
+    led5 String
     timestamp DateTime @default(now())
     update_at DateTime @default(now()) @updatedAt
 
