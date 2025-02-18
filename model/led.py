@@ -7,5 +7,6 @@ class DataLED(BaseModel):
     led2:str
     led3:str
     led4:str
+    led5:str
 
 ResultLED = led

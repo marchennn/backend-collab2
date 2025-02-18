@@ -16,32 +16,25 @@ class LED:
         return await DBLed.get_led()
     
     @staticmethod
-    async def control_led(status: str) -> ResultLED:
-        """
-        Mengontrol LED dengan mengirim pesan MQTT dan memperbarui database.
-        """
-        print("test 1")
-        # # Validasi LED ID
-        # if led_id not in ["1", "2", "3", "4", "5"]:
-        #     raise HTTPException(status_code=400, detail="Invalid LED ID. LED ID must be 1, 2, 3, or 4.")
-
-        # Validasi status
-        if status.lower() not in ["on", "off"]:
-            raise HTTPException(status_code=400, detail="Invalid status. Status must be 'on' or 'off'.")
+    async def control_led(led_id: int, status1: str, status2: str, status3: str, status4: str, status5: str) -> ResultLED:
+        statuses = [status1, status2, status3, status4, status5]
+        for i, status in enumerate(statuses, start=1):
+            if status not in ["on", "off"]:
+                raise HTTPException(sts.HTTP_400_BAD_REQUEST, detail="invalid status for LED {i}.")
 
         # Publish pesan ke MQTT menggunakan aiomqtt
         try:
             async with Client(MQTT_BROKER, MQTT_PORT) as client:
-                topic = "led/1"  # Topik MQTT untuk LED tertentu  
-                payload = json.dumps({"led1": status.lower()})  # Format pesan yang akan dikirim
-                await client.publish(topic, payload)  # Publish ke MQTT
-                print("test")
+                for i, status in enumerate(statuses, start=1):
+                    topic = f"led/{i}"
+                    payload = json.dumps({"status": status})  # Format pesan yang akan dikirim
+                    await client.publish(topic, payload)  # Publish ke MQTT
         except MqttError as e:
             raise HTTPException(status_code=500, detail=f"Failed to publish MQTT message: {str(e)}")
 
         # Update status dan PWM di database
         try:
-            updated_led = await DBLed.update_led(status)
+            updated_led = await DBLed.update_led(statuses)
             return updated_led
         except:
             print("err")
